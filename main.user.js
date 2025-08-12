@@ -1171,8 +1171,8 @@
 	  }
 	}
 
-	var css_248z = ".global-module_button__EeOr9 {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 12px;\r\n  position: fixed;\r\n  left: 18px;\r\n  top: 50%;\r\n  transform: translate(-50%, -50%);\r\n  z-index: 999;\r\n  width: 32px;\r\n  height: 32px;\r\n  background-color: black;\r\n  border-radius: 16px;\r\n  cursor: pointer;\r\n  color: white;\r\n}\r\n";
-	var style = {"button":"global-module_button__EeOr9"};
+	var css_248z = ".global-module_container__-tGDM {\r\n  height: 36px;\r\n  width: 40px;\r\n  background-color: #fff;\r\n  position: fixed;\r\n  left: 0px;\r\n  top: 80%;\r\n  /* transform: translate(-50%, -50%); */\r\n  z-index: 999;\r\n  display: flex;\r\n  justify-content: flex-end;\r\n  border-radius: 0px 36px 36px 0px;\r\n  padding: 4px;\r\n}\r\n.global-module_container__-tGDM .global-module_button__EeOr9 {\r\n  display: flex;\r\n  align-items: center;\r\n  justify-content: center;\r\n  font-size: 10px;\r\n  width: 28px;\r\n  height: 28px;\r\n  background-color: rgb(0, 0, 0);\r\n  border-radius: 14px;\r\n  cursor: pointer;\r\n  color: white;\r\n}\r\n";
+	var style = {"container":"global-module_container__-tGDM","button":"global-module_button__EeOr9"};
 	styleInject(css_248z);
 
 	// 打印指定元素，进阶版
@@ -1209,21 +1209,16 @@
 	  }
 
 	  // 复制主页面的所有样式到iframe
-	  // 1. 复制所有link标签（外部样式表）
-	  const links = document.querySelectorAll('link[rel="stylesheet"]');
-	  links.forEach(link => {
-	    const newLink = document.createElement("link");
-	    newLink.rel = "stylesheet";
-	    newLink.href = link.href;
-	    documentEl.head.appendChild(newLink);
-	  });
-
-	  // 2. 复制所有style标签（内联样式）
-	  const styles = document.querySelectorAll("style");
-	  styles.forEach(style => {
-	    const newStyle = document.createElement("style");
-	    newStyle.textContent = style.textContent;
-	    documentEl.head.appendChild(newStyle);
+	  const styleNodes = document.head.querySelectorAll('link[rel="stylesheet"], style');
+	  styleNodes.forEach(node => {
+	    // 克隆节点
+	    const clonedNode = node.cloneNode(true);
+	    // 对于link标签，确保添加crossorigin属性
+	    if (clonedNode.tagName.toLowerCase() === "link") {
+	      clonedNode.setAttribute("crossorigin", "anonymous");
+	    }
+	    // 添加到iframe的head
+	    documentEl.head.appendChild(clonedNode);
 	  });
 
 	  //深度拷贝目标元素
@@ -1248,15 +1243,22 @@
 	      return;
 	    }
 	    iframeEl.contentWindow.print();
+	    printButtonText.innerHTML = "print";
 	  }, 1000);
 	};
+	const buttonContainer = document.createElement("div");
+	buttonContainer.classList.add(style.container);
 	const printButton = document.createElement("div");
 	const printButtonText = document.createElement("span");
 	printButtonText.style.textAlign = "center";
 	printButtonText.innerHTML = "print";
 	printButton.appendChild(printButtonText);
 	printButton.classList.add(style.button);
-	printButton.addEventListener("click", () => printAdvanced("cv-container"));
-	document.body.appendChild(printButton);
+	printButton.addEventListener("click", () => {
+	  printButtonText.innerHTML = "load";
+	  printAdvanced("cv-container");
+	});
+	buttonContainer.appendChild(printButton);
+	document.body.appendChild(buttonContainer);
 
 })();
