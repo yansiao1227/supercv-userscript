@@ -52,21 +52,18 @@ const printAdvanced = (elementId: string) => {
   }
 
   // 复制主页面的所有样式到iframe
-  // 1. 复制所有link标签（外部样式表）
-  const links = document.querySelectorAll('link[rel="stylesheet"]');
-  links.forEach((link) => {
-    const newLink = document.createElement("link");
-    newLink.rel = "stylesheet";
-    newLink.href = (link as any).href;
-    documentEl.head.appendChild(newLink);
-  });
-
-  // 2. 复制所有style标签（内联样式）
-  const styles = document.querySelectorAll("style");
-  styles.forEach((style) => {
-    const newStyle = document.createElement("style");
-    newStyle.textContent = style.textContent;
-    documentEl.head.appendChild(newStyle);
+  const styleNodes = document.head.querySelectorAll(
+    'link[rel="stylesheet"], style'
+  );
+  styleNodes.forEach((node) => {
+    // 克隆节点
+    const clonedNode = node.cloneNode(true) as HTMLElement;
+    // 对于link标签，确保添加crossorigin属性
+    if (clonedNode.tagName.toLowerCase() === "link") {
+      clonedNode.setAttribute("crossorigin", "anonymous");
+    }
+    // 添加到iframe的head
+    documentEl.head.appendChild(clonedNode);
   });
 
   //深度拷贝目标元素
@@ -91,17 +88,23 @@ const printAdvanced = (elementId: string) => {
       return;
     }
     iframeEl.contentWindow.print();
+    printButtonText.innerHTML = "print";
   }, 1000);
 };
 
-const printButton = document.createElement("div");
+const buttonContainer = document.createElement("div");
+buttonContainer.classList.add(style.container);
 
+const printButton = document.createElement("div");
 const printButtonText = document.createElement("span");
 printButtonText.style.textAlign = "center";
 printButtonText.innerHTML = "print";
 printButton.appendChild(printButtonText);
-
 printButton.classList.add(style.button);
-printButton.addEventListener("click", () => printAdvanced("cv-container"));
+printButton.addEventListener("click", () => {
+  printButtonText.innerHTML = "load";
+  printAdvanced("cv-container");
+});
 
-document.body.appendChild(printButton);
+buttonContainer.appendChild(printButton);
+document.body.appendChild(buttonContainer);
