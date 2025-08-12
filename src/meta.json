@@ -4,5 +4,8 @@
   "@namespace": "supercv-userscript",
   "@version": "0.0.1",
   "@run-at": "document-end",
-  "@require": ["https://code.jquery.com/jquery-3.6.0.min.js"]
+  "@require": [
+    "https://code.jquery.com/jquery-3.6.0.min.js",
+    "https://html2canvas.hertzen.com/dist/html2canvas.min.js"
+  ]
 }
